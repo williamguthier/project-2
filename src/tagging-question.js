@@ -18,13 +18,20 @@ export class TaggingQuestion extends LitElement {
     return css`
 
         .answer-wrapper {
-            background-color: red;
+        
         }
 
         .feedback-wrapper {
+            border-radius: 2px;
+            
+        }
+        .tag.correct {
             background-color: green;
         }
 
+        .tag.incorrect {
+            background-color: red;
+        }
 
     
     `;
@@ -42,12 +49,12 @@ export class TaggingQuestion extends LitElement {
             </div>
         <div class="tag-wrapper">
             ${this.tagData.map(tagObj => {
-                return html` <div class="tag" draggable="true" data-correct="${tagObj.correct}" data-feedback="${tagObj.feedback}" data-tag="${tagObj.tag}" @dragstart="${this.handleDragStart}">
+                return html` <div class="tag" draggable="true" data-correct="${tagObj.correct}" data-feedback="${tagObj.feedback}" data-tag="${tagObj.tag}" @dragstart="${this.Start}">
             ${tagObj.tag}</div>`;
             })}
         </div>
-        <div class="answer-wrapper" @dragover="${this.handleDragOver}" @drop="${this.handleDrop}">
-            Answers:
+        <div class="answer-wrapper" @dragover="${this.DragOver}" @drop="${this.Drop}">
+            Drop Answers Here
         </div>
         <div class="feedback-wrapper">
             Feedback:
@@ -60,17 +67,17 @@ export class TaggingQuestion extends LitElement {
     `;
   }
 
-  handleDragStart(event) {
+  Start(event) {
     const tag = event.target;
     event.dataTransfer.setData('text/plain', tag.dataset.tag);
     tag.classList.add('dragging');
   }
 
-  handleDragOver(event) {
+  DragOver(event) {
     event.preventDefault();
   }
 
-  handleDrop(event) {
+  Drop(event) {
     event.preventDefault();
     const data = event.dataTransfer.getData('text/plain');
     const tag = document.createElement('div');
@@ -83,26 +90,22 @@ export class TaggingQuestion extends LitElement {
   checkAnswer() {
     const answerArea = this.shadowRoot.querySelector('.answer-wrapper');
     const feedbackArea = this.shadowRoot.querySelector('.feedback-wrapper');
+
     const answerTags = Array.from(answerArea.children);
 
-    feedbackArea.innerHTML = '';
-
     answerTags.forEach(tag => {
-        const correct = tag.dataset.correct === 'true';
-        const feedback = tag.dataset.feedback;
-
-
-        if (correct) {
-            tag.classList.add('correct');
-        } else {
-            tag.classList.add('incorrect');
-            const feedbackElement = document.createElement('p');
-            feedbackElement.textContent = feedback;
-            feedbackArea.appendChild(feedbackElement);
+        const tagData = this.tagData.find(data => data.tag === tag.textContent.trim());
+        if (tagData) {
+            if (tagData.correct) {
+                tag.classList.add('correct');
+            } else {
+                tag.classList.add('incorrect');
+                const feedback = document.createElement('div');
+                feedback.textContent = tagData.feedback;
+                feedbackArea.appendChild(feedback);
+            }
         }
     });
-    const checkAnswerButton = this.shadowRoot.querySelector('.check-answer');
-    checkAnswerButton.disabled = true;
 }
 
 
