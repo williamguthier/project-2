@@ -90,7 +90,6 @@ export class TaggingQuestion extends LitElement {
   checkAnswer() {
     const answerArea = this.shadowRoot.querySelector('.answer-wrapper');
     const feedbackArea = this.shadowRoot.querySelector('.feedback-wrapper');
-
     const answerTags = Array.from(answerArea.children);
 
     answerTags.forEach(tag => {
