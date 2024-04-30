@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit';
 
-export class TaggingQuestion extends LitElement {
+export class TaggingProject extends LitElement {
 
   static get tag() {
-    return 'tagging-question';
+    return 'tagging-project';
   }
 
   constructor() {
@@ -17,14 +17,67 @@ export class TaggingQuestion extends LitElement {
   static get styles() {
     return css`
 
-        .answer-wrapper {
+        .container {
+          text-align: center;
+          margin-top: 48px;
+        }
+
+        .question-wrapper {
+            margin-bottom: 24px;
+        }
         
+        .image img {
+          width: 600px;
+          height: auto;
+          border-radius: 12px;
+        }
+
+        .question {
+          font-size: 16px;
+          font-weight: bold;
+        }
+
+        .tag-wrapper {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          margin-bottom: 24px;
+          border-radius: 6px;
+          border: 2px solid black;
+          cursor: pointer;
+
+        }
+
+        .answer-wrapper {
+          border: 2px dashed gray;
+          border-radius: 6px;
+          margin-bottom: 24px;
         }
 
         .feedback-wrapper {
+            margin-bottom: 20px;
             border-radius: 2px;
+            border: 2px solid black;
+            border-radius: 6px;
             
         }
+
+        .buttons {
+          display: flex;
+          justify-content: center;
+          gap: 96px;
+        }
+
+        button {
+          font-size: 24px;
+          font-weight: bold;
+          padding: 10px 20px;
+          border-radius: 6px;
+          border: 2px solid black;
+          cursor: pointer;
+        }
+
+
         .tag.correct {
             background-color: green;
         }
@@ -39,6 +92,7 @@ export class TaggingQuestion extends LitElement {
 
   render() {
     return html`
+    <div class="container">
         <div class="tagging-question">
             <div class="question-wrapper">
                 <div class="image">
@@ -63,6 +117,7 @@ export class TaggingQuestion extends LitElement {
             <button class="check-answer" @click="${this.checkAnswer}">Check Answer</button>
             <button class="reset" @click="${this.reset}">Reset</button>
         </div>
+    </div>
     </div>
     `;
   }
@@ -152,4 +207,4 @@ export class TaggingQuestion extends LitElement {
   }
 }
 
-globalThis.customElements.define(TaggingQuestion.tag, TaggingQuestion);
+globalThis.customElements.define(TaggingProject.tag, TaggingProject);
