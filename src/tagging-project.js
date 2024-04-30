@@ -11,6 +11,7 @@ export class TaggingProject extends LitElement {
     this.title = 'Which of the following big ideas would YOU associate with this artistic work?';
     this.tagData = [];
     this.questionData();
+    this.answersChecked = false;
 
   }
 
@@ -19,7 +20,8 @@ export class TaggingProject extends LitElement {
 
         .container {
           text-align: center;
-          margin-top: 48px;
+          margin: 0 auto;
+          max-width: 600px;
         }
 
         .question-wrapper {
@@ -41,6 +43,7 @@ export class TaggingProject extends LitElement {
           display: flex;
           gap: 12px;
           justify-content: center;
+          align-items: center;
           margin-bottom: 24px;
           border-radius: 6px;
           border: 2px solid black;
@@ -65,7 +68,8 @@ export class TaggingProject extends LitElement {
         .buttons {
           display: flex;
           justify-content: center;
-          gap: 96px;
+          gap: 48px;
+          margin-top: 24px;
         }
 
         button {
@@ -86,6 +90,18 @@ export class TaggingProject extends LitElement {
             background-color: red;
         }
 
+        .check-answer {
+          background-color: green;
+        }
+
+        .reset {
+          background-color: blue;
+        }
+        .disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+
     
     `;
   }
@@ -103,7 +119,7 @@ export class TaggingProject extends LitElement {
             </div>
         <div class="tag-wrapper">
             ${this.tagData.map(tagObj => {
-                return html` <div class="tag" draggable="true" data-correct="${tagObj.correct}" data-feedback="${tagObj.feedback}" data-tag="${tagObj.tag}" @dragstart="${this.Start}">
+                return html` <div class="tag" draggable="true" data-correct="${tagObj.correct}" data-feedback="${tagObj.feedback}" data-tag="${tagObj.tag}" @dragstart="${this.Start}" @click="${this.toggleTag}">
             ${tagObj.tag}</div>`;
             })}
         </div>
@@ -114,7 +130,7 @@ export class TaggingProject extends LitElement {
             Feedback:
         </div>
         <div class="buttons">
-            <button class="check-answer" @click="${this.checkAnswer}">Check Answer</button>
+            <button class="check-answer ${this.answersChecked ? 'disabled' : ''}" @click="${this.checkAnswer}">Check Answer</button>
             <button class="reset" @click="${this.reset}">Reset</button>
         </div>
     </div>
@@ -140,6 +156,30 @@ export class TaggingProject extends LitElement {
     tag.classList.add('tag');
     tag.setAttribute('draggable', 'true');
     event.target.appendChild(tag);
+
+    const tagWrapper = this.shadowRoot.querySelector('.tag-wrapper');
+    const draggedTag = tagWrapper.querySelector(`[data-tag="${data}"]`);
+    if (draggedTag) {
+      draggedTag.style.display = '';
+      draggedTag.setAttribute('draggable', 'true');
+      this.appendChild(draggedTag);
+    }
+
+    tag.addEventListener('dragstart', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      draggedTag.style.display = 'block';
+      tag.remove();
+    });
+    tag.addEventListener('dragstart', (event) => {
+      event.dataTransfer.setData('text/plain', tag.dataset.tag);
+      tag.classList.add('dragging');
+    });
+    tag.addEventListener('dragend', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      draggedTag.style.display = 'block';
+    });
   }
 
   checkAnswer() {
@@ -160,6 +200,17 @@ export class TaggingProject extends LitElement {
             }
         }
     });
+
+    this.answersChecked = true;
+
+    const tags = this.shadowRoot.querySelectorAll('.tag');
+    tags.forEach(tag => {
+      tag.removeAttribute('draggable');
+      tag.removeEventListener('click', this.toggleTag);
+    });
+
+    const checkAnswerButton = this.shadowRoot.querySelector('.check-answer');
+    checkAnswerButton.classList.add('disabled');
 }
 
 
@@ -170,16 +221,42 @@ export class TaggingProject extends LitElement {
 
         const answerTags = Array.from(answerArea.children);
         answerTags.forEach(tag => {
-            tag.remove();
+            this.shadowRoot.querySelector('.tag-wrapper').appendChild(tag);
         });
 
-        feedbackArea.innerHTML = '';
+        feedbackArea.querySelectorAll('div').forEach(feedback => feedback.remove());
 
         const tags = this.shadowRoot.querySelectorAll('.tag');
         tags.forEach(tag => {
             tag.classList.remove('correct', 'incorrect');
+            tag.setAttribute('draggable', 'true');
+            tag.addEventListener('click', this.toggleTag.bind(this));
         });
+
+        tags.forEach(tag => {
+          tag.addEventListener('click', this.toggleTag.bind(this));
+        });
+
+        this.answersChecked = false;
+
+        checkAnswerButton.classList.remove('disabled');
+
         checkAnswerButton.disabled = false;
+  }
+
+  toggleTag(event) {
+    if (!this.answersChecked) {
+    const tag = event.target;
+    const answerArea = this.shadowRoot.querySelector('.answer-wrapper');
+    const tagWrapper = this.shadowRoot.querySelector('.tag-wrapper');
+
+
+      if (tag.parentNode === answerArea) {
+        tagWrapper.appendChild(tag);
+      } else {
+        answerArea.appendChild(tag);
+        }
+    }
   }
 
   static get properties() {
@@ -188,6 +265,7 @@ export class TaggingProject extends LitElement {
         tagData: {type: Array},
     };
   }
+
   questionData() {
     this.tagData = [
         {"tag": "good form", "correct": true, "feedback": "The shape of the vase clearly demonstrates craftsmanship"},
