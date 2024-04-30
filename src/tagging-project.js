@@ -10,7 +10,8 @@ export class TaggingProject extends DDD {
     super();
     this.title = 'Which of the following big ideas would YOU associate with this artistic work?';
     this.tagData = [];
-    this.fetchTagData();
+    this.questionData();
+    this.imageSrc = '';
     this.answersChecked = false;
 
   }
@@ -131,7 +132,7 @@ export class TaggingProject extends DDD {
         <div class="tagging-question">
             <div class="question-wrapper">
                 <div class="image">
-                    <img src="https://art-tec.co.uk/wp-content/uploads/2019/01/Canvas-Vs.-Artistic-Work-Paper.jpg" alt="Artistic work">
+                    <img src="${this.imageSrc}" alt="Artistic work">
                     <div class="question">Question: ${this.title}</div>
                 </div>
                 </div>
@@ -299,26 +300,44 @@ export class TaggingProject extends DDD {
     return {
         title: {type: String},
         tagData: {type: Array},
+        imageSrc: { type: String}
     };
   }
 
-  
+  questionData() {
+    this.tagData = [
+        {"tag": "good form", "correct": true, "feedback": "The shape of the vase clearly demonstrates craftsmanship"},
+        {"tag": "poor taste", "correct": false, "feedback": "Taste is in the eye of the designer as well as the viewer."},
+        {"tag": "contrasting themes", "correct": false, "feedback": "There is uniformity in the shape, but there is no depth to this media to imply that it is contrasting with other figures."},
+        {"tag": "AI", "correct": true, "feedback": "While a modification of prior work, this is still AI generative work."},
+        {"tag": "shading", "correct": false, "feedback": "While there is a light source and a shadow cast, shading is a term used for pencil based sketching."},
+        {"tag": "original work", "correct": true, "feedback": "This character is not based on any person, place, or existing trope."},
+        {"tag": "accessible", "correct": false, "feedback": "The color scheme, while high contrast in some areas, loses form in others and has written text unrelated to the character."}
+  ];
 
-  async fetchTagData() {
+  this.shuffleTagData();
+}
+
+  /*async fetchTagData() {
     try {
-      const response = await fetch('tagData.json'):
+      const response = await fetch('file://absolute/path/to/tagData.json');
+      if (!response.ok) {
+        throw new Error('Failed to fetch tag data');
+      }
       const jsonData = await response.json();
+      console.log('Fetched tag data:', jsonData);
       this.tagData = jsonData;
       this.shuffleTagData();
     } catch (error) {
       console.error('Error fetching tag data:', error);
     }
     }
-  }
+*/
 
   shuffleTagData() {
     this.tagData.sort(() => Math.random() - 0.5);
   }
 
+}
 
 globalThis.customElements.define(TaggingProject.tag, TaggingProject);
