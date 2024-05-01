@@ -318,9 +318,9 @@ export class TaggingProject extends DDD {
   this.shuffleTagData();
 }
 
-  /*async fetchTagData() {
+  async fetchTagData() {
     try {
-      const response = await fetch('file://absolute/path/to/tagData.json');
+      const response = await fetch('/Assets/tagData.json');
       if (!response.ok) {
         throw new Error('Failed to fetch tag data');
       }
@@ -332,7 +332,7 @@ export class TaggingProject extends DDD {
       console.error('Error fetching tag data:', error);
     }
     }
-*/
+
 
   shuffleTagData() {
     this.tagData.sort(() => Math.random() - 0.5);
