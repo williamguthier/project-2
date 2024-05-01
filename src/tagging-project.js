@@ -137,6 +137,7 @@ export class TaggingProject extends DDD {
                 </div>
                 </div>
             </div>
+        <div>Answer Box</div>
         <div class="tag-wrapper">
             ${this.tagData.map(tagObj => {
                 return html` <div class="tag" draggable="true" data-correct="${tagObj.correct}" data-feedback="${tagObj.feedback}" data-tag="${tagObj.tag}" @dragstart="${this.Start}" @click="${this.toggleTag}">
